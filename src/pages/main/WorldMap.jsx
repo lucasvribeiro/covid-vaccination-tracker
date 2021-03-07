@@ -67,6 +67,13 @@ const WorldMap = ({ selectedDate }) => {
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
+                  stroke="black"
+                  strokeWidth={0.1}
+                  style={{
+                    default: { outline: 'none' },
+                    hover: { outline: 'none' },
+                    pressed: { outline: 'none' },
+                  }}
                   fill={getCountryColor(d)}
                 />
               );
