@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import DateRangeSlider from './DateRangeSlider';
-import WorldMap from './WorldMap';
+import ReactTooltip from 'react-tooltip';
+
+import DateRangeSlider from '../../components/DateRangeSlider/DateRangeSlider';
+import WorldMap from '../../components/WorldMap/WorldMap';
+
+import './Main.css';
 
 function MainPage() {
   const [selectedDate, setSelectedDate] = useState(new Date('2021-02-25'));
+  const [tooltipContent, setTooltipContent] = useState('');
 
   return (
     <div>
@@ -16,7 +21,8 @@ function MainPage() {
       >
         <DateRangeSlider onChange={setSelectedDate} />
       </div>
-      <WorldMap selectedDate={selectedDate} />
+      <WorldMap selectedDate={selectedDate} setTooltipContent={setTooltipContent} />
+      <ReactTooltip>{tooltipContent}</ReactTooltip>
     </div>
   );
 }

@@ -2,11 +2,9 @@ import { format } from 'date-fns';
 import propTypes from 'prop-types';
 import React, { useState } from 'react';
 
-function DateRangeSlider({
-  initialDate,
-  finalDate,
-  onChange,
-}) {
+import './DateRangeSlider.css';
+
+function DateRangeSlider({ initialDate, finalDate, onChange }) {
   const [value, setValue] = useState(finalDate.getTime());
 
   return (

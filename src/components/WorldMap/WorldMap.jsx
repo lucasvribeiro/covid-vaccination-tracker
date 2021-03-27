@@ -1,13 +1,16 @@
 import { csv } from 'd3-fetch';
 import propTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   ComposableMap,
   Geographies,
   Geography,
-  Graticule, Sphere, ZoomableGroup,
+  ZoomableGroup,
 } from 'react-simple-maps';
-import getTotalVaccinationsAtDay from '../../utils/csvUtils';
+import { getTotalVaccinationsAtDay } from '../../utils/csvUtils';
+
+import './WorldMap.css';
 
 const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
 
@@ -33,9 +36,10 @@ function getCountryColor(country) {
   return colors[colorKey];
 }
 
-const WorldMap = ({ selectedDate }) => {
+const WorldMap = ({ selectedDate, setTooltipContent }) => {
   const [dayData, setDayData] = useState([]);
   const [allData, setAllData] = useState([]);
+  const [nav, setNav] = useState('');
 
   useEffect(async () => {
     setAllData(await csv('/country_vaccinations.csv'));
@@ -49,44 +53,60 @@ const WorldMap = ({ selectedDate }) => {
     setDayData(getTotalVaccinationsAtDay(allData, selectedDate));
   }, [selectedDate, allData]);
 
+  if (nav) return <Redirect to={nav} />;
+
   return (
-    <ComposableMap
-      projectionConfig={{
-        scale: 120,
-      }}
-      projection="geoMercator"
-    >
-      <ZoomableGroup zoom={1}>
-        <Sphere stroke="#E4E5E6" strokeWidth={0.5} />
-        <Graticule stroke="#E4E5E6" strokeWidth={0.5} />
-        {dayData.length > 0 && (
+    <div>
+      <ComposableMap
+        projectionConfig={{
+          scale: 120,
+        }}
+        projection="geoMercator"
+        data-tip=""
+      >
+        <ZoomableGroup zoom={1}>
+          {dayData.length > 0 && (
           <Geographies geography={geoUrl}>
             {({ geographies }) => geographies.map((geo) => {
               const d = dayData.find((s) => s.iso_code === geo.properties.ISO_A3);
+              const totalVaccinations = d ? d.total_vaccinations_per_hundred : 'N/A';
               return (
                 <Geography
+                  className="geo-territory"
                   key={geo.rsmKey}
                   geography={geo}
                   stroke="black"
-                  strokeWidth={0.1}
+                  strokeWidth={0.2}
+                  fill={getCountryColor(d)}
                   style={{
                     default: { outline: 'none' },
                     hover: { outline: 'none' },
                     pressed: { outline: 'none' },
                   }}
-                  fill={getCountryColor(d)}
+                  onMouseEnter={() => {
+                    const { NAME } = geo.properties;
+                    setTooltipContent(`${NAME} — ${totalVaccinations}`);
+                  }}
+                  onMouseLeave={() => {
+                    setTooltipContent('');
+                  }}
+                  onClick={() => setNav(`country/${geo.properties.ISO_A3}`)}
                 />
               );
             })}
           </Geographies>
-        )}
-      </ZoomableGroup>
-    </ComposableMap>
+          )}
+        </ZoomableGroup>
+      </ComposableMap>
+
+    </div>
+
   );
 };
 
 WorldMap.propTypes = {
   selectedDate: propTypes.instanceOf(Date).isRequired,
+  setTooltipContent: propTypes.func.isRequired,
 };
 
 export default WorldMap;
