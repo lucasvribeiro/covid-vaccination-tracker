@@ -14,11 +14,7 @@ function Routes() {
         <Route
           exact
           path="/country/:iso"
-          render={({
-            match,
-          }) => (
-            <CountryPage match={match} />
-          )}
+          component={CountryPage}
         />
       </Switch>
     </Router>

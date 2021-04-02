@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import propTypes from 'prop-types';
 import React, { useState } from 'react';
 
-import './DateRangeSlider.css';
+import './DateRangeSlider.scss';
 
 function DateRangeSlider({ initialDate, finalDate, onChange }) {
   const [value, setValue] = useState(finalDate.getTime());
@@ -11,7 +11,7 @@ function DateRangeSlider({ initialDate, finalDate, onChange }) {
     <div>
       <input
         type="range"
-        style={{ width: 500 }}
+        className="range"
         min={initialDate.getTime()}
         max={finalDate.getTime()}
         value={value}
@@ -23,7 +23,9 @@ function DateRangeSlider({ initialDate, finalDate, onChange }) {
         }}
         step={86400}
       />
-      {format(new Date(value), 'dd/MM/yyyy')}
+      <span className="label">
+        {format(new Date(value), 'dd/MM/yyyy')}
+      </span>
     </div>
   );
 }

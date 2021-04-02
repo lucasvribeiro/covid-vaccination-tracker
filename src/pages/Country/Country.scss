@@ -1,0 +1,40 @@
+.header {
+  padding: 2px;
+  padding-left: 24px;
+  padding-right: 24px;
+  background-color: #3949ab;
+  display: flex;
+  color: white;
+  
+  .titleContainer {
+    display: flex;
+    flex: 1;
+    align-items: center;
+
+    span {
+      font-size: 2.5em;
+      margin-right: 16px;
+      cursor: pointer;
+      outline: none;
+    }
+  
+    h2 {
+      display: inline;
+    }
+  }
+
+  .country {
+    text-align: center;
+  }
+
+  .flex {
+    flex: 1;
+  }
+}
+
+.chart-container {
+  margin-left: 10vw;
+  margin-top: 5vh;
+  width: 80vw;
+  display: flex;
+}

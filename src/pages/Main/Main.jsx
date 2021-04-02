@@ -1,29 +1,28 @@
 import React, { useState } from 'react';
 import ReactTooltip from 'react-tooltip';
 
+import './Main.scss';
+
 import DateRangeSlider from '../../components/DateRangeSlider/DateRangeSlider';
 import WorldMap from '../../components/WorldMap/WorldMap';
-
-import './Main.css';
 
 function MainPage() {
   const [selectedDate, setSelectedDate] = useState(new Date('2021-02-25'));
   const [tooltipContent, setTooltipContent] = useState('');
 
   return (
-    <div>
-      <div style={{
-        display: 'flex',
-        marginTop: 24,
-        padding: 24,
-        justifyContent: 'center',
-      }}
-      >
+    <>
+      <header className="header">
+        <h2>
+          COVID19 Vaccination Tracker
+        </h2>
         <DateRangeSlider onChange={setSelectedDate} />
+      </header>
+      <div>
+        <WorldMap selectedDate={selectedDate} setTooltipContent={setTooltipContent} />
+        <ReactTooltip>{tooltipContent}</ReactTooltip>
       </div>
-      <WorldMap selectedDate={selectedDate} setTooltipContent={setTooltipContent} />
-      <ReactTooltip>{tooltipContent}</ReactTooltip>
-    </div>
+    </>
   );
 }
 

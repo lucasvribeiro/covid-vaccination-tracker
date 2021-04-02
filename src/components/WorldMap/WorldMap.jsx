@@ -1,7 +1,7 @@
 import { csv } from 'd3-fetch';
 import propTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   ComposableMap,
   Geographies,
@@ -9,7 +9,6 @@ import {
   ZoomableGroup,
 } from 'react-simple-maps';
 import { getTotalVaccinationsAtDay } from '../../utils/csvUtils';
-
 import './WorldMap.css';
 
 const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
@@ -37,9 +36,10 @@ function getCountryColor(country) {
 }
 
 const WorldMap = ({ selectedDate, setTooltipContent }) => {
+  const history = useHistory();
+
   const [dayData, setDayData] = useState([]);
   const [allData, setAllData] = useState([]);
-  const [nav, setNav] = useState('');
 
   useEffect(async () => {
     setAllData(await csv('/country_vaccinations.csv'));
@@ -52,8 +52,6 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
 
     setDayData(getTotalVaccinationsAtDay(allData, selectedDate));
   }, [selectedDate, allData]);
-
-  if (nav) return <Redirect to={nav} />;
 
   return (
     <div>
@@ -90,7 +88,7 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
                   onMouseLeave={() => {
                     setTooltipContent('');
                   }}
-                  onClick={() => setNav(`country/${geo.properties.ISO_A3}`)}
+                  onClick={() => history.push(`country/${geo.properties.ISO_A3}`)}
                 />
               );
             })}
