@@ -1,4 +1,5 @@
 import { csv } from 'd3-fetch';
+import { format } from 'date-fns';
 import propTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -9,6 +10,7 @@ import {
   ZoomableGroup,
 } from 'react-simple-maps';
 import { getTotalVaccinationsAtDay } from '../../utils/csvUtils';
+import SelectedCountries from '../SelectedCountries';
 import './WorldMap.css';
 
 const geoUrl = 'https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json';
@@ -35,11 +37,15 @@ function getCountryColor(country) {
   return colors[colorKey];
 }
 
-const WorldMap = ({ selectedDate, setTooltipContent }) => {
+const WorldMap = ({
+  selectedDate, setTooltipContent, initialDate, endDate,
+}) => {
   const history = useHistory();
 
   const [dayData, setDayData] = useState([]);
   const [allData, setAllData] = useState([]);
+
+  const [selectedCountries, setSelectedCountries] = useState([]);
 
   useEffect(async () => {
     setAllData(await csv('/country_vaccinations.csv'));
@@ -52,6 +58,25 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
 
     setDayData(getTotalVaccinationsAtDay(allData, selectedDate));
   }, [selectedDate, allData]);
+
+  function toggleCountry(properties) {
+    if (selectedCountries.find((country) => country.ISO_A3 === properties.ISO_A3)) {
+      setSelectedCountries(
+        (countries) => countries.filter((country) => country.ISO_A3 !== properties.ISO_A3),
+      );
+    } else {
+      setSelectedCountries((countries) => [...countries, properties]);
+    }
+  }
+
+  function openChart() {
+    const selectedIsoCodes = selectedCountries.map((country) => country.ISO_A3);
+
+    const formattedInitialDate = format(initialDate, 'yyyy-MM-dd');
+    const formattedEndDate = format(endDate, 'yyyy-MM-dd');
+
+    history.push(`country/${selectedIsoCodes.join(',')}?initialDate=${formattedInitialDate}&endDate=${formattedEndDate}`);
+  }
 
   return (
     <div>
@@ -68,14 +93,19 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
             {({ geographies }) => geographies.map((geo) => {
               const d = dayData.find((s) => s.iso_code === geo.properties.ISO_A3);
               const totalVaccinations = d ? d.total_vaccinations_per_hundred : 'N/A';
+
+              const isCountrySelected = selectedCountries
+                .find((country) => country.ISO_A3 === geo.properties.ISO_A3);
+
               return (
                 <Geography
                   className="geo-territory"
                   key={geo.rsmKey}
                   geography={geo}
-                  stroke="black"
-                  strokeWidth={0.2}
+                  stroke={isCountrySelected ? 'red' : 'black'}
+                  strokeWidth={isCountrySelected ? 2 : 0.2}
                   fill={getCountryColor(d)}
+                  opacity={isCountrySelected ? 0.7 : 1}
                   style={{
                     default: { outline: 'none' },
                     hover: { outline: 'none' },
@@ -88,7 +118,7 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
                   onMouseLeave={() => {
                     setTooltipContent('');
                   }}
-                  onClick={() => history.push(`country/${geo.properties.ISO_A3}`)}
+                  onClick={() => toggleCountry(geo.properties)}
                 />
               );
             })}
@@ -96,15 +126,22 @@ const WorldMap = ({ selectedDate, setTooltipContent }) => {
           )}
         </ZoomableGroup>
       </ComposableMap>
-
+      {selectedCountries.length && (
+      <SelectedCountries
+        countries={selectedCountries}
+        onViewChart={openChart}
+        onClear={() => setSelectedCountries([])}
+      />
+      )}
     </div>
-
   );
 };
 
 WorldMap.propTypes = {
   selectedDate: propTypes.instanceOf(Date).isRequired,
   setTooltipContent: propTypes.func.isRequired,
+  initialDate: propTypes.instanceOf(Date).isRequired,
+  endDate: propTypes.instanceOf(Date).isRequired,
 };
 
 export default WorldMap;
