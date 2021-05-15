@@ -22,20 +22,40 @@ function MainPage() {
     history.push('vaccines');
   }
 
+  function onNavigateToPercentages() {
+    history.push('percentages');
+  }
+
   return (
     <Flex flexDirection="column" height="100%">
       <Flex height={20} backgroundColor="blue.700" alignItems="center" padding={4}>
         <Heading flexGrow={1} color="white">COVID19 Vaccination Tracker</Heading>
         <Box
           position="absolute"
-          bg="gray.300"
           borderColor="black"
           width="-moz-fit-content"
           top={100}
           left={5}
+          flexDirection="column"
         >
-          <Center>
-            <Button size="lg" colorScheme="blue" onClick={onNavigateToVaccines}>Ver vacinas</Button>
+          <Center flexDirection="column">
+            <Button
+              size="lg"
+              colorScheme="blue"
+              onClick={onNavigateToVaccines}
+              width="100%"
+            >
+              Ver vacinas
+            </Button>
+            <Button
+              size="lg"
+              colorScheme="blue"
+              onClick={onNavigateToPercentages}
+              width="100%"
+              marginTop={2}
+            >
+              Ver porcentagens
+            </Button>
           </Center>
         </Box>
         <Slider

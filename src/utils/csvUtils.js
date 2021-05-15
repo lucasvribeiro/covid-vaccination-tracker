@@ -40,3 +40,18 @@ export function getVaccines(data) {
 
   return { vaccines: uniqueVaccines, amountCountries: countCountries };
 }
+
+export function getPeopleFullyVaccinatedPercentage(data) {
+  const countryPercentage = new Map();
+
+  data.forEach((day) => {
+    countryPercentage.set(day.iso_code, {
+      countryName: day.country,
+      percentage: day.people_fully_vaccinated_per_hundred,
+    });
+  });
+
+  return Array
+    .from(countryPercentage.values())
+    .sort((a, b) => b.percentage - a.percentage);
+}
