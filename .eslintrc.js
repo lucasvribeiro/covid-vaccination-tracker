@@ -17,7 +17,15 @@ module.exports = {
   plugins: [
     'react',
   ],
-  rules:{
-    "linebreak-style": 0
-  }
+  rules: {
+    'linebreak-style': 0,
+  },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        paths: ['./src'],
+      },
+    },
+  },
 };

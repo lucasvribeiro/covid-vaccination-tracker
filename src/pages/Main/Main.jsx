@@ -1,9 +1,10 @@
 import {
-  Box, Flex, Heading, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text,
+  Box, Button, Center, Flex, Heading, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text,
 } from '@chakra-ui/react';
 import { addDays, format } from 'date-fns';
 import { differenceInDays } from 'date-fns/esm';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import WorldMap from '../../components/WorldMap/WorldMap';
 
@@ -15,11 +16,28 @@ const AMOUNT_OF_DAYS = differenceInDays(END_DATE, INITIAL_DATE);
 function MainPage() {
   const [selectedDate, setSelectedDate] = useState(END_DATE);
   const [tooltipText, setTooltipText] = useState('');
+  const history = useHistory();
+
+  function onNavigateToVaccines() {
+    history.push('vaccines');
+  }
 
   return (
     <Flex flexDirection="column" height="100%">
       <Flex height={20} backgroundColor="blue.700" alignItems="center" padding={4}>
         <Heading flexGrow={1} color="white">COVID19 Vaccination Tracker</Heading>
+        <Box
+          position="absolute"
+          bg="gray.300"
+          borderColor="black"
+          width="-moz-fit-content"
+          top={100}
+          left={5}
+        >
+          <Center>
+            <Button size="lg" colorScheme="blue" onClick={onNavigateToVaccines}>Ver vacinas</Button>
+          </Center>
+        </Box>
         <Slider
           aria-label="slider-ex-1"
           min={0}
